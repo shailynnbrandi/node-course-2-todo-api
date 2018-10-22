@@ -199,7 +199,7 @@ describe ('GET /users/me',() => {
 describe('POST .users', () => {
   it('should create a user', (done) => {
     var email = 'example@example.com';
-    var password = '123abc!';
+    var password = '123asd!';
     
     request(app)
       .post('/users')
@@ -217,15 +217,29 @@ describe('POST .users', () => {
 
         User.findOne({email}).then((user) => {
           expect(user).toBeTruthy();
-          expect(user.password).toNotBe(password);
+          expect(user.password).not.toBe(password);
           done();
-        })
+        });
       });
   });
   it('Should return validation errors if request invalid', (done) => {
- 
+    request(app)
+      .post('/users')
+      .send({
+        email: 'and',
+        password: '123'
+      })
+      .expect(400);
+      done();
   });
   it ('should not create user if email is in use', (done) => {
-
+    request(app)
+      .post('/users')
+      .send({
+        email: users[0].email,
+        password: 'Password123!'
+      })
+      .expect(400)
+      .end(done)
   });
 });
